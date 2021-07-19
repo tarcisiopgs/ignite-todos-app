@@ -1,43 +1,63 @@
-import React, { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import React, { useCallback, useState } from "react";
+import { StyleSheet, View } from "react-native";
 
-import { Header } from '../components/Header';
-import { Task, TasksList } from '../components/TasksList';
-import { TodoInput } from '../components/TodoInput';
+import { Header } from "../components/Header";
+import { Task, TasksList } from "../components/TasksList";
+import { TodoInput } from "../components/TodoInput";
 
 export function Home() {
   const [tasks, setTasks] = useState<Task[]>([]);
 
-  function handleAddTask(newTaskTitle: string) {
-    //TODO - add new task
-  }
+  const handleAddTask = useCallback(
+    (newTaskTitle: string) => {
+      const data = {
+        id: new Date().getTime(),
+        title: newTaskTitle,
+        done: false,
+      };
 
-  function handleToggleTaskDone(id: number) {
-    //TODO - toggle task done if exists
-  }
+      setTasks((prevState) => [...prevState, data]);
+    },
+    [setTasks]
+  );
 
-  function handleRemoveTask(id: number) {
-    //TODO - remove task from state
-  }
+  const handleToggleTaskDone = useCallback(
+    (id: number) => {
+      setTasks((prevState) => {
+        const index = prevState.findIndex((item) => item.id === id);
+        const arr = [...prevState];
+
+        arr[index].done = !arr[index].done;
+
+        return arr;
+      });
+    },
+    [setTasks]
+  );
+
+  const handleRemoveTask = useCallback(
+    (id: number) => {
+      setTasks((prevState) => prevState.filter((item) => item.id !== id));
+    },
+    [setTasks]
+  );
 
   return (
     <View style={styles.container}>
       <Header tasksCounter={tasks.length} />
-
       <TodoInput addTask={handleAddTask} />
-
-      <TasksList 
-        tasks={tasks} 
+      <TasksList
         toggleTaskDone={handleToggleTaskDone}
-        removeTask={handleRemoveTask} 
+        removeTask={handleRemoveTask}
+        tasks={tasks}
       />
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: "#EBEBEB",
     flex: 1,
-    backgroundColor: '#EBEBEB'
-  }
-})
+  },
+});
